@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
   
     steps:
@@ -14,3 +14,28 @@ jobs:
 
       - name: Run application test
         run: ./tests/test_app.sh
+
+      - name: Build application
+        run: ./scripts/build.sh
+
+      - name: Show environment
+        env:
+          APP_ENV: staging
+        run: ./scripts/show-env.sh
+
+      - name: Check secret
+        env:
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+        run: |
+          if [ -n "$APP_SECRET" ]; then
+            echo "Secret is available"
+          else
+            echo "Secret is missing"
+            exit 1
+          fi    
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: devops-app
+          path: build/app.sh
