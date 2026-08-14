@@ -22,7 +22,18 @@ jobs:
         env:
           APP_ENV: staging
         run: ./scripts/show-env.sh
-    
+
+      - name: Check secret
+        env:
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+        run: |
+          if [ -n "$APP_SECRET" ]; then
+            echo "Secret is available"
+          else
+            echo "Secret is missing"
+            exit 1
+          fi    
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
